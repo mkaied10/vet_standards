@@ -1,25 +1,54 @@
 @extends('layouts.app')
-
+@section('title', 'إضافة قسم رئيسي')
 @section('content')
 <div class="hero">
-    <h1>إضافة قسم جديد</h1>
+    <h1>إضافة قسم رئيسي</h1>
 </div>
-<div class="card mt-5">
+<div id="notification" class="alert" style="display: none;"></div>
+<div class="card mt-4">
     <div class="card-body">
-        <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="create-category-form" method="POST">
             @csrf
             <div class="form-group">
                 <label>الاسم</label>
-                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
-                @error('name') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                <input type="text" name="name" class="form-control" required>
             </div>
-            <div class="form-group">
-                <label>الصورة</label>
-                <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">
-                @error('image') <span class="invalid-feedback">{{ $message }}</span> @enderror
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> إضافة</button>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button>
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#create-category-form').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '{{ route('admin.categories.store') }}',
+            type: 'POST',
+            data: $(this).serialize(),
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            success: function(response) {
+                showNotification('success', response.message);
+                $('#create-category-form')[0].reset();
+            },
+            error: function(xhr) {
+                showNotification('danger', 'حدث خطأ أثناء الإضافة');
+            }
+        });
+    });
+
+    function showNotification(type, message) {
+        $('#notification')
+            .removeClass('alert-success alert-danger')
+            .addClass('alert-' + type)
+            .text(message)
+            .show()
+            .delay(3000)
+            .fadeOut();
+    }
+});
+</script>
 @endsection

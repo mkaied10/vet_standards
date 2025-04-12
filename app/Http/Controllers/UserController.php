@@ -28,13 +28,43 @@ class UserController extends Controller
             'role' => 'required|in:user,admin',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'is_admin' => $request->role === 'admin' ? 1 : 0,
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'تم إضافة المستخدم بنجاح');
+        return response()->json(['message' => 'تم إضافة المستخدم بنجاح', 'user' => $user], 201);
+    }
+
+    public function edit(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'role' => 'required|in:user,admin',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'is_admin' => $request->role === 'admin' ? 1 : 0,
+            'password' => $request->password ? Hash::make($request->password) : $user->password,
+        ]);
+
+        return response()->json(['message' => 'تم تعديل المستخدم بنجاح', 'user' => $user]);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return response()->json(['message' => 'تم حذف المستخدم بنجاح']);
     }
 }

@@ -6,9 +6,9 @@
 <div class="hero">
     <h1>جميع المواصفات</h1>
 </div>
-<div class="mb-3 text-left">
+{{-- <div class="mb-3 text-left">
     <button class="btn btn-primary export-pdf" data-table="specifications-table"><i class="fas fa-file-pdf"></i> تصدير كـ PDF</button>
-</div>
+</div> --}}
 <div class="table-responsive">
     <table class="table table-hover" id="specifications-table">
         <thead class="thead-dark">
